@@ -2,7 +2,15 @@
 #include <Usb.h>
 #include <Adafruit_DotStar.h>
 
+#define WAKEUP_PIN 4              // Solder to side of cap on guide
+                                  // -= NOTE: THIS MUST BE PIN 4!!! =-
+#define RCM_STRAP_PIN 3           // Solder to pin 10 on joycon rail
+#define RCM_STRAP_TIME_us 1000000 // Amount of time to hold RCM_STRAP low and then launch payload
+#define ONBOARD_LED 13
+
 // Contains fuseeBin and FUSEE_BIN_LENGTH
+// Include only one payload here
+// Use tools/binConverter.py to convert any payload bin you wish to load
 #include "hekate_ctcaer_2.3.h"
 
 #define INTERMEZZO_SIZE 92
@@ -197,16 +205,35 @@ void sleep(int errorCode) {
   //delay(100);
   digitalWrite(PIN_LED_RXL, HIGH);
   digitalWrite(PIN_LED_TXL, HIGH);
-  digitalWrite(13, LOW);
+  digitalWrite(ONBOARD_LED, LOW);
   if (errorCode == 1) {
-    setLedColor("black");; //led to off
+    setLedColor("black"); //led to off
   } else {
     setLedColor("red"); //led to red
+    delayMicroseconds(RCM_STRAP_TIME_us);
+    setLedColor("black"); //led to off
   }
+
+  // Before sleeping, make sure that we can wake up again when the switch turns on
+  // by attaching an interrupt to the wakeup pin
+  attachInterrupt(WAKEUP_PIN, wakeup, RISING);
+  // Allow pin 4 to trigger wakeups. I'm not sure how to generalize this so that's
+  // why pin 4 must be the wakeup pin.
+  EIC->WAKEUP.vec.WAKEUPEN |= (1<<6);
+  
   SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk; /* Enable deepsleep */
+
+  GCLK->CLKCTRL.reg = uint16_t(
+      GCLK_CLKCTRL_CLKEN |
+      GCLK_CLKCTRL_GEN_GCLK2 |
+      GCLK_CLKCTRL_ID( GCLK_CLKCTRL_ID_EIC_Val )
+  );
+  while (GCLK->STATUS.bit.SYNCBUSY) {}
+  
   __DSB(); /* Ensure effect of last store takes effect */
   __WFI(); /* Enter sleep mode */
 }
+
 void setLedColor(const char color[]) {
   if (color == "red") {
     strip.setPixelColor(0, 64, 0, 0);
@@ -221,8 +248,22 @@ void setLedColor(const char color[]) {
   }
   strip.show();
 }
+
+void wakeup(){
+  // First, we set the RCM_STRAP low
+  pinMode(RCM_STRAP_PIN, OUTPUT);
+  digitalWrite(RCM_STRAP_PIN, LOW);
+  setLedColor("green");
+  // Wait a second (I tried to reduce this but 1 second is good)
+  delayMicroseconds(RCM_STRAP_TIME_us);
+  SCB->AIRCR = ((0x5FA << SCB_AIRCR_VECTKEY_Pos) | SCB_AIRCR_SYSRESETREQ_Msk); //full software reset
+}
+
 void setup()
 {
+  // This continues after the reset after a wakeup
+  // Set RCM_STRAP as an input to "stealth" any funny business on the RCM_STRAP
+  pinMode(RCM_STRAP_PIN, INPUT);
 
   strip.begin();
 
@@ -289,4 +330,27 @@ void setup()
 
 void loop()
 {
+  bool blink = true;
+  int currentTime = 0;
+  while (!foundTegra)
+  {
+    currentTime = millis();
+//    usb.Task();
+
+    if (currentTime > lastCheckTime + 100) {
+//      usb.ForEachUsbDevice(&findTegraDevice);
+      if (blink && !foundTegra) {
+        setLedColor("orange"); //led to orange
+      } else {
+        setLedColor("black"); //led to black
+      }
+      blink = !blink;
+      lastCheckTime = currentTime;
+    }
+    if (currentTime > 5000) {
+      sleep(-1);
+    }
+
+  }
+  
 }
