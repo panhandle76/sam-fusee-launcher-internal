@@ -2,11 +2,12 @@
 #include <Usb.h>
 #include <Adafruit_DotStar.h>
 
-#define WAKEUP_PIN 4              // Solder to side of cap on guide
-                                  // -= NOTE: THIS MUST BE PIN 4!!! =-
-#define RCM_STRAP_PIN 3           // Solder to pin 10 on joycon rail
-#define RCM_STRAP_TIME_us 1000000 // Amount of time to hold RCM_STRAP low and then launch payload
+#define WAKEUP_PIN 4               // Solder to side of cap on guide
+                                   // -= NOTE: THIS MUST BE PIN 4!!! =-
+#define RCM_STRAP_PIN 3            // Solder to pin 10 on joycon rail
+#define RCM_STRAP_TIME_us 1000000  // Amount of time to hold RCM_STRAP low and then launch payload
 #define ONBOARD_LED 13
+#define LED_CONFIRM_TIME_us 500000 // How long to show red or green light for success or fail
 
 // Contains fuseeBin and FUSEE_BIN_LENGTH
 // Include only one payload here
@@ -207,10 +208,12 @@ void sleep(int errorCode) {
   digitalWrite(PIN_LED_TXL, HIGH);
   digitalWrite(ONBOARD_LED, LOW);
   if (errorCode == 1) {
+    setLedColor("green"); //led to red
+    delayMicroseconds(LED_CONFIRM_TIME_us);
     setLedColor("black"); //led to off
   } else {
     setLedColor("red"); //led to red
-    delayMicroseconds(RCM_STRAP_TIME_us);
+    delayMicroseconds(LED_CONFIRM_TIME_us);
     setLedColor("black"); //led to off
   }
 
