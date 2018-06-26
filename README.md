@@ -82,7 +82,8 @@ Instructions forthcoming
 * xboxexpert has reported that sometimes the trinket will wake itself up ~10 to
   13 seconds after a poweroff. The trinket quickly goes back to sleep and this
 seems to only happen once per poweroff and does not continually drain the
-switch battery. I cannot confirm because I do not want to open my switch again.
+switch battery. I cannot confirm because I do not want to open my switch again
+and the light is not visible from the outside.
 * Behavior with autoRCM is unsupported. Use autoRCM at your own risk.
 * The trinket is always "on" but remains in deep sleep. If you store the switch
   unplugged for a very long time there is a chance that the switch battery
@@ -90,6 +91,10 @@ could drain to 0% (very bad for a lithium ion battery). I have good reason to
 believe the point marked for power is *after* the battery protection circuit,
 so it should be safe. But I cannot confirm it 100%. **basically if your switch
 catches fire and burns your house down it's not my fault**
+
+# Install Picture
+
+![xboxexpert's installation](images/xboxexpert2.png)
 
 # Thanks!
 

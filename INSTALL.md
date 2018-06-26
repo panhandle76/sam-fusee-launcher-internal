@@ -161,6 +161,10 @@ This is the order of what happens when you turn the switch on:
 
   Check that pin 4 is connected to the cap without shorting anything
 
-# Pictures of my installation
+# Installation Pictures
 
 ![My installation](images/my_install.jpg)
+
+![xboxexpert's installation](images/xboxexpert1.png)
+
+![xboxexpert's installation](images/xboxexpert2.png)
