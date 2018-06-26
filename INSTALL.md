@@ -163,4 +163,4 @@ This is the order of what happens when you turn the switch on:
 
 # Pictures of my installation
 
-!(My installation)[images/my_install.jpg]
+![My installation](images/my_install.jpg)
