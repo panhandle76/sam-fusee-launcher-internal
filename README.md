@@ -75,6 +75,8 @@ See [INSTALL.md](INSTALL.md)
 
 # Reflashing the Trinket while installed
 
+Instructions forthcoming
+
 # Issues
 
 * xboxexpert has reported that sometimes the trinket will wake itself up ~10 to
@@ -92,12 +94,12 @@ catches fire and burns your house down it's not my fault**
 # Thanks!
 
 * [atlas44](https://github.com/atlas44/sam-fusee-launcher) for the original
-  implementation
+  implementation, help with my install, and being someone I can bounce ideas
+off of
 * [CTCaer](https://github.com/CTCaer/hekate) for his work on hekate
 * [noemu](https://github.com/noemu/sam-fusee-launcher) for his
   iteration/cleanup of atlas44's code.
 * [xboxexport](https://www.youtube.com/user/xboxexpert) for testing the mod,
-  helping with the install instructions, and the idea for grabbing RCM_STRAP at
-the rail.
-
+  helping with the install instructions, pictures, and the idea for grabbing
+RCM_STRAP at the rail.
 
