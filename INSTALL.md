@@ -61,6 +61,7 @@ Now it is time to install the Trinket. Make sure the battery is **unplugged**
 from the Switch.
 
 Refer to the following picture for recommended placement of the Trinket.
+**An alternate point for Trinket pad 4 is detailed one section below.**
 
 ![Trinket installation image](images/trinket_installation.png)
 
@@ -72,7 +73,22 @@ Carefully wire up the Trinket as shown in the picture using some thin wire. Be
 very careful with the point on the capacitor, and be very careful not to bridge
 it with the adjacent capacitor.
 
-## Install `RCM_STRAP` wire (Optional)
+## Install `CPU RESET` wire (Alternate Trinket pad 4) (Test pad on underside of motherboard)
+
+If you do not want to solder to the small capacitor there is another pad on the
+other side of the motherboard that you can also use.
+
+**Warning, this is not *thoroughly* tested but it *should* work just as well as
+the other solder point.**
+
+Solder pad 3 to pad `E10` in the ![picture linked here](http://switchbrew.org/index.php?title=Testpads).
+
+The test pad is on the opposite side of the motherboard. I will not detail the 
+steps required to remove the motherboard and flip it over. I will say that you
+should be very careful with all of the ribbon connecters as they are extremely
+fragile.
+
+## Install `RCM_STRAP` wire (From joycon rail) (Optional)
 
 If you want to continue using a modded joycon or jig, feel free to skip this
 step. Even if you have a modded joycon, the advantage of this step is that the
@@ -101,7 +117,30 @@ pushing the small metal pin out (like adjusting a watch band) to release it.
 
 * Re-assemble the joycon rail
 * Reconnect the ribbon cable
-* Connect the other end of that wire to pin 3 of the Trinket
+* Connect the other end of that wire to pad 3 of the Trinket
+
+## Install `RCM_STRAP` wire (Alternate test pad on underside of motherboard) (Optional)
+
+Solder pad 3 to pad `G9` in the ![picture linked here](http://switchbrew.org/index.php?title=Testpads). 
+
+The test pad is on the opposite side of the motherboard. I will not detail the 
+steps required to remove the motherboard and flip it over. I will say that you
+should be very careful with all of the ribbon connecters as they are extremely
+fragile.
+
+## Install `VOL+` wire (Optional)
+
+**Warning, this is untested and very difficult to solder, but it should work.
+There is a chance I may have gotten the point wrong, if so Vol+ should be
+one of the other 2 pins on that connecter that isn't ground. Additionally, 
+the Switch CPU will spin up about 10-15 seconds after powering down. If the
+Trinket pulls both `RCM_STRAP` and Vol+, the Switch *will* go into RCM mode
+after a poweroff and the Trinket will load its payload unless you power off
+the Switch in RCM mode like within Hekate.**
+
+Solder one of the following points to pad 0 on the Trinket.
+
+![Vol+ solder points](images/volup.png)
 
 # Test the mod
 

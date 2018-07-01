@@ -42,7 +42,10 @@ Summary:
 * Go to Sketch > Include Library > Manage Libraries
 * Install USBHost and Adafruit DotStar
 
-Connect the Trinket m0 to your computer and double Click on the Reset Button.
+Double click the reset button on the trinket -- the center LED should turn RED.
+Connect the Trinket m0 to your computer -- the center LED should turn GREEN, and 
+should see a USB mass storage device called `TRINKETBOOT`
+
 Your computer should detect the Trinket m0 automatically (On win7 install this [driver](https://github.com/adafruit/Adafruit_Windows_Drivers/releases/download/2.2.0/adafruit_drivers_2.2.0.0.exe))
 
 Got to Tools > Port and select your conneted trinket m0
@@ -56,9 +59,11 @@ Upload (Ctrl + U).
 The trinket is ready for installation.
 
 LED is:
+* blue -> Holding `RCM_STRAP` low
 * blinking orange -> searching for Switch in RCM mode
 * red -> no Switch found
-* off (except the power LED) -> finished successfully
+* green -> payload successfully injected, about to sleep
+* off -> sleeping
 
 # Update the Payload
 Download your favorite [payload](https://github.com/CTCaer/hekate/releases) as a `.bin` file.
@@ -75,7 +80,14 @@ See [INSTALL.md](INSTALL.md)
 
 # Reflashing the Trinket while installed
 
-Instructions forthcoming
+This is hacky and may not work forever, but somehow it works:
+
+* Boot into horizon, leave it at the home screen
+* Put the trinket into bootloader mode by pulling the Trinket `RST` line to ground
+  twice quickly.
+* Plug the switch into your computer, the LED should turn green and you should see
+  the Trinket as a mass storage device
+* Flash the Trinket with the Arduino IDE as normal.
 
 # Issues
 
