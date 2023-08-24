@@ -39,7 +39,7 @@ print("reading file: " + fileIn)
 
 for byte in openFileToByte_generator(fileIn,16):
     countBytes += 1
-    stringBuffer += "0x"+binascii.hexlify(byte).decode('ascii')+", "
+    stringBuffer += "0x" + binascii.hexlify(byte.to_bytes(1,'little')).decode('ascii')+", "
     if countBytes%16 is 0:
     	stringBuffer += "\n\t"
 
