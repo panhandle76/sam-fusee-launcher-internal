@@ -13,7 +13,7 @@
 // Contains fuseeBin and FUSEE_BIN_LENGTH
 // Include only one payload here
 // Use tools/binConverter.py to convert any payload bin you wish to load
-#include "hekate_ctcaer_3.0.h"
+#include "hekate_ctcaer_6.0.5.h"
 
 #define INTERMEZZO_SIZE 92
 const byte intermezzo[INTERMEZZO_SIZE] =
@@ -68,8 +68,6 @@ Adafruit_DotStar strip = Adafruit_DotStar(1, INTERNAL_DS_DATA, INTERNAL_DS_CLK, 
 // that bug and is based on the code of USBHost::outTransfer, USBHost::SetPipeAddress and USBHost::OutTransfer.
 void usbOutTransferChunk(uint32_t addr, uint32_t ep, uint32_t nbytes, uint8_t* data)
 {
-
-
   EpInfo* epInfo = usb.getEpInfoEntry(addr, ep);
 
   usb_pipe_table[epInfo->epAddr].HostDescBank[0].CTRL_PIPE.bit.PDADDR = addr;
@@ -203,11 +201,6 @@ void setupTegraDevice()
 }
 
 void sleep(int errorCode) {
-  // Turn off all LEDs and go to sleep. To launch another payload, press the reset button on the device.
-  //delay(100);
-  digitalWrite(PIN_LED_RXL, HIGH);
-  digitalWrite(PIN_LED_TXL, HIGH);
-  digitalWrite(ONBOARD_LED, LOW);
   if (errorCode == 1) {
     setLedColor("green"); //led to red
     delayMicroseconds(LED_CONFIRM_TIME_us);
@@ -217,18 +210,6 @@ void sleep(int errorCode) {
     delayMicroseconds(LED_CONFIRM_TIME_us);
     setLedColor("black"); //led to off
   }
-  
-  SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk; /* Enable deepsleep */
-
-  GCLK->CLKCTRL.reg = uint16_t(
-      GCLK_CLKCTRL_CLKEN |
-      GCLK_CLKCTRL_GEN_GCLK2 |
-      GCLK_CLKCTRL_ID( GCLK_CLKCTRL_ID_EIC_Val )
-  );
-  while (GCLK->STATUS.bit.SYNCBUSY) {}
-  
-  __DSB(); /* Ensure effect of last store takes effect */
-  __WFI(); /* Enter sleep mode */
 }
 
 void setLedColor(const char color[]) {
@@ -248,63 +229,26 @@ void setLedColor(const char color[]) {
   strip.show();
 }
 
-void wakeup(){
-  // First, we set the RCM_STRAP low
-  pinMode(RCM_STRAP_PIN, OUTPUT);
-  pinMode(VOLUP_PIN, OUTPUT);
-  digitalWrite(RCM_STRAP_PIN, LOW);
-  digitalWrite(VOLUP_PIN, LOW);
-  setLedColor("blue");
-  // Wait a second (I tried to reduce this but 1 second is good)
-  delayMicroseconds(RCM_STRAP_TIME_us);
-  SCB->AIRCR = ((0x5FA << SCB_AIRCR_VECTKEY_Pos) | SCB_AIRCR_SYSRESETREQ_Msk); //full software reset
-}
-
 void setup()
 {
-  // This continues after the reset after a wakeup
-  // Set RCM_STRAP as an input to "stealth" any funny business on the RCM_STRAP
-  pinMode(RCM_STRAP_PIN, INPUT);
-  pinMode(VOLUP_PIN, INPUT);
-  pinMode(WAKEUP_PIN, INPUT);
-
-  // Before sleeping, make sure that we can wake up again when the switch turns on
-  // by attaching an interrupt to the wakeup pin
-  attachInterrupt(WAKEUP_PIN, wakeup, RISING);
-  // Allow pin 4 to trigger wakeups. I'm not sure how to generalize this so that's
-  // why pin 4 must be the wakeup pin.
-  EIC->WAKEUP.vec.WAKEUPEN |= (1<<6);
-
-  strip.begin();
-
+  // setup USB
   int usbInitialized = usb.Init();
 #ifdef DEBUG
   Serial.begin(115200);
   delay(100);
 #endif
 
+  // if USB init failed then sleep
   if (usbInitialized == -1) sleep(-1);
 
   DEBUG_PRINTLN("Ready! Waiting for Tegra...");
-  bool blink = true;
-  int currentTime = 0;
   while (!foundTegra)
   {
-    currentTime = millis();
+    //currentTime = millis();
     usb.Task();
-
-    if (currentTime > lastCheckTime + 100) {
-      usb.ForEachUsbDevice(&findTegraDevice);
-      if (blink && !foundTegra) {
-        setLedColor("orange"); //led to orange
-      } else {
-        setLedColor("black"); //led to black
-      }
-      blink = !blink;
-      lastCheckTime = currentTime;
-    }
-    if (currentTime > 1500) {
-      sleep(-1);
+    usb.ForEachUsbDevice(&findTegraDevice);
+    if (!foundTegra) {
+      setLedColor("orange"); //led to orange
     }
 
   }
@@ -334,8 +278,6 @@ void setup()
   DEBUG_PRINTLN("Done!");
 
   sleep(1);
-
-
 }
 
 void loop()
